@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+
+array = []
+
+ARGV.each{|filename|
+  File.open(filename, "r"){|file|
+    file.each{|line|
+      line.chomp!
+      array.push line
+    }
+  }
+}
+
+array.shuffle!
+
+array.each{|elem|
+  puts elem
+}
