@@ -1,11 +1,15 @@
 (ns fobos_clj.fobos)
 
+(defprotocol Fobos
+  (update-weight [_ iter])
+  (classify [_ fv]))
+
 (defn clip-by-zero [a b]
   (if (> a 0.0)
     (if (> a b) (- a b) 0.0)
     (if (< a (- b)) (+ a b) 0.0)))
 
-(defn dotproduct "内積"
+(defn dotproduct
   [weight fv]
   (reduce (fn [sum [k v]]
 	    (+ sum
@@ -16,8 +20,7 @@
   "各iterationで重みを減衰させていく"
   (/ 1.0 (+ 1.0 (/ iter example-size))))
 
-(defn l1-regularize 
-  "L1正則化をかけて、sparseにした重みベクトルを返す"
+(defn l1-regularize
   [weight iter example-size lambda]
   (let [lambda-hat (* (get-eta iter example-size) lambda)]
     (reduce (fn [w [k v]]
@@ -26,9 +29,3 @@
 		  (dissoc tmp-w k)
 		  tmp-w)))
 	    weight weight)))
-
-(defn muladd [weight fv y scale]
-  (reduce (fn [w [k xi]]
-	    (assoc w k (+ (get-in w [k] 0.0)
-			  (* y xi scale))))
-	  weight fv))
