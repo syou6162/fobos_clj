@@ -64,11 +64,3 @@
 	  lambda 1.0]
       (is (not (empty?
 		(l1-regularize weight iter example-size lambda)))))))
-
-(deftest test-muladd
-  (let [weight {0 0.1, 1 0.2, 2 0.5, 3 -0.1}
-	fv [[1 1] [2 1.0] [100 1]]]
-    (is (= (muladd weight fv 1 1.0)
-	   {0 0.1, 1 1.2, 2 1.5, 3 -0.1, 100 1.0}))
-    (is (= (muladd weight fv -1 1.0)
-	   {0 0.1, 1 -0.8, 2 -0.5, 3 -0.1, 100 -1.0}))))
