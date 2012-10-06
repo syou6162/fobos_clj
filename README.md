@@ -16,6 +16,21 @@ $ lein run --mode train --model fobos_clj.logistic.Logistic --train-filename tra
 $ lein run --mode test --test-filename test.txt --model-file weight.model
 ```
 
+## Using from clojure
+
+```clj
+(let [examples [[1 [[1 1] [2 1]]]
+                [-1 [[1 2] [2 0]]]]
+      init-weight {0 0.1, 1 0.2, 2 0.5, 3 -0.1}
+      iter 10
+      eta 0.1
+      lambda 0.1
+      svm (.update-weight ;; train
+           (fobos_clj.svm.SVM. examples init-weight eta lambda) iter)]
+  ;; test
+  (.classify svm [[1 1] [2 1]]))
+```
+
 ## License
 
 Copyright (C) 2012 Yasuhisa Yoshida
