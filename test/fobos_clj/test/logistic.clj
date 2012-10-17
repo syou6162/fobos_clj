@@ -1,4 +1,5 @@
 (ns fobos_clj.test.logistic
+  (:use [fobos_clj.fobos])
   (:use [fobos_clj.logistic])
   (:use [clojure.test]))
 
@@ -15,14 +16,12 @@
 (deftest test-update-weight
   (let [examples [[1 [[1 1] [2 1]]]
 		  [-1 [[1 2] [2 0]]]]
-	init-weight {0 0.1, 1 0.2, 2 0.5, 3 -0.1}
-	iter 10
 	eta 0.1
 	lambda 0.1
-	logistic (fobos_clj.logistic.Logistic. examples init-weight eta lambda)]
-    (.update-weight logistic iter)))
+	logistic (make-Logistic examples eta lambda)]
+    (update-weight logistic)))
 
 (deftest test-classify
   (let [weight {0 0.1, 1 0.2, 2 0.5, 3 -0.1}
-	logistic (fobos_clj.logistic.Logistic. nil weight nil nil)]
-    (is (= (.classify logistic [[1 1] [2 1]]) 1))))
+	logistic (assoc (make-Logistic) :weight weight)]
+    (is (= (classify logistic [[1 1] [2 1]]) 1))))
