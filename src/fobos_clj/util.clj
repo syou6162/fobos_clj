@@ -1,4 +1,5 @@
 (ns fobos_clj.util
+  (:use [clojure.contrib.core :only (new-by-name)])
   (:use [clojure.contrib.string :only (split)]))
 
 (defn parse-line [line]
@@ -11,6 +12,18 @@
 	  (map #(let [[xi cnt] (split #":" %)]
 		  [xi (Double/parseDouble cnt)]))
 	  (vec))]))
+
+(defn make-model
+  ([model-name]
+     (let [examples []
+           eta 1.0
+           lambda 1.0]
+       (make-model model-name examples eta lambda)))
+  ([model-name examples eta lambda]
+     (let [weight (hash-map)
+           t 1
+           last-update (hash-map)]
+       (new-by-name model-name examples weight eta lambda t last-update))))
 
 (defn get-f-value [gold prediction]
   (let [freq (frequencies (map vector gold prediction))
