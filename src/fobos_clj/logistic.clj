@@ -2,15 +2,15 @@
   (:use [fobos_clj.fobos]
         [fobos_clj.util]))
 
-(defn logistic-deriv [y inner-product xi]
+(defn logistic-deriv ^double [^long y inner-product ^double xi]
   (* (- y)
      xi
      (Math/exp (* (- y) inner-product))
      (/ 1.0 (+ 1.0 (Math/exp (* (- y) inner-product))))))
 
-(defn muldiff [weight fv y scale]
+(defn muldiff [weight fv ^long y ^double scale]
   (let [inner-product (dotproduct weight fv)]
-    (reduce (fn [w [k xi]]
+    (reduce (fn [w [k ^double xi]]
 	      (assoc w k
 		     (- (get w k 0.0)
 			(* scale

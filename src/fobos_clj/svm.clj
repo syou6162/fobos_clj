@@ -2,14 +2,14 @@
   (:use [fobos_clj.fobos]
         [fobos_clj.util]))
 
-(defn margin [weight fv y]
-  (* (dotproduct weight fv) y))
+(defn margin ^double [weight fv ^long y]
+  (* (dotproduct weight fv) (double y)))
 
-(defn muladd [weight fv y scale]
+(defn muladd [weight fv ^long y ^double scale]
   (reduce (fn [w [k xi]]
-	    (assoc w k (+ (get-in w [k] 0.0)
-			  (* y xi scale))))
-	  weight fv))
+            (assoc w k (+ (get-in w [k] 0.0)
+                          (* y xi scale))))
+          weight fv))
 
 (defrecord SVM [examples weight eta lambda t last-update])
 
