@@ -3,7 +3,6 @@
   (:use fobos_clj.fobos)
   (:use fobos_clj.svm)
   (:use fobos_clj.logistic)
-  (:use [clojure.contrib.core :only (new-by-name)])
   (:use [clojure.contrib.duck-streams :only (reader read-lines)])
   (:use [clojure.contrib.command-line :only (with-command-line)]))
 
@@ -18,26 +17,21 @@
 	max-iter (opts :max-iter)
 	eta (opts :eta)
 	lambda (opts :lambda)
-	model-name (opts :model)
-	init-model (update-weight
-		    (new-by-name model-name train-examples {} eta lambda)
-		    0)]
+	model-name (opts :model)]
     (loop [iter 1
-	   model init-model]
+	   model (update-weight (make-model model-name train-examples eta lambda))]
       (if (= iter max-iter)
-	(spit (opts :model-file) {:model-name (.getName (class model))
-				  :weight (:weight model)})
+        (save-model (assoc model :examples []) (opts :model-file))
 	(do
 	  (println (str iter ", "
 			(count (:weight model)) ", "
 			(get-f-value gold (map #(classify model (second %)) train-examples))))
-	  (recur (inc iter) (update-weight model iter)))))))
+	  (recur (inc iter) (update-weight model)))))))
 
 (defn test-mode [opts]
   (let [test-examples (read-examples (opts :test-filename))
-	model-info (read-string (slurp (opts :model-file)))
-	gold (vec (map first test-examples))
-	model (new-by-name (:model-name model-info) nil (:weight model-info) nil nil)]
+	model (load-model (make-model (opts :model)) (opts :model-file))
+	gold (vec (map first test-examples))]
     (get-f-value gold (map #(classify model (second %)) test-examples))))
 
 (defn -main [& args]
