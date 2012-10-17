@@ -1,4 +1,4 @@
-(ns fobos_clj.fobos)
+(use '[clojure.core.memoize])
 
 (defprotocol Fobos
   (update-weight [_ iter])
@@ -13,19 +13,21 @@
   [weight fv]
   (reduce (fn [sum [k v]]
 	    (+ sum
-	       (* v (get-in weight [k] 0.0))))
-	  0.0 fv))
+	       (* v (get weight k 0.0))))
+          0.0 fv))
 
-(defn get-eta [iter example-size]
-  "各iterationで重みを減衰させていく"
-  (/ 1.0 (+ 1.0 (/ iter example-size))))
+(defn get-eta' ^double [^long iter]
+  "decrease the learning rate in each iteration"
+  (/ 1.0 (+ 1.0 iter)))
 
-(defn l1-regularize
-  [weight iter example-size lambda]
-  (let [lambda-hat (* (get-eta iter example-size) lambda)]
-    (reduce (fn [w [k v]]
-	      (let [tmp-w (assoc w k (clip-by-zero v lambda-hat))]
-		(if (< (Math/abs v) lambda-hat)
-		  (dissoc tmp-w k)
-		  tmp-w)))
-	    weight weight)))
+(def get-eta (memo get-eta'))
+
+(defn get-Lambda-t
+  ([t result]
+     (if (zero? t)
+       result
+       (double (+ (get-Lambda-t (dec t)) (get-eta t)))))
+  ([t]
+     (double (get-Lambda-t t 0.0))))
+
+(def get-Lambda-t (memo get-Lambda-t))
