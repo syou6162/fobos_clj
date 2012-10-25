@@ -28,7 +28,7 @@
 
 (defn get-eta' ^double [^long iter]
   "decrease the learning rate in each iteration"
-  (/ 1.0 (+ 1.0 iter)))
+  (/ 1.0 (Math/sqrt iter)))
 
 (def get-eta (memo get-eta'))
 
